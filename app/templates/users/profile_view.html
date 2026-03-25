@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.get_full_name }} - SparkMatch{% endblock %}
+
+{% block content %}
+<div class="py-4 min-vh-100" style="background:#f8f9fa;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card shadow overflow-hidden">
+          <!-- Photo header -->
+          <div class="position-relative" style="height:320px;background:#212529;">
+            <img src="{{ profile.get_photo_url }}" alt="{{ profile_user.get_full_name }}"
+                 class="w-100 h-100" style="object-fit:cover;opacity:0.92;">
+            <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white"
+                 style="background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+              <h3 class="fw-bold mb-0">
+                {{ profile_user.get_full_name|default:profile_user.username }}
+                {% if profile.get_age %}, <span>{{ profile.get_age }}</span>{% endif %}
+              </h3>
+              {% if profile.location %}
+              <p class="mb-0 small opacity-75">
+                <i class="bi bi-geo-alt-fill text-danger"></i> {{ profile.location }}
+              </p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="card-body p-4">
+            {% if profile.bio %}
+            <div class="mb-3">
+              <h6 class="text-muted fw-semibold text-uppercase small mb-2">
+                <i class="bi bi-chat-quote me-1"></i> Sobre mí
+              </h6>
+              <p class="mb-0">{{ profile.bio }}</p>
+            </div>
+            {% endif %}
+
+            <div class="d-flex gap-2 flex-wrap">
+              {% if profile.gender %}
+              <span class="badge bg-light text-dark border px-3 py-2">
+                {% if profile.gender == 'M' %}👨 Hombre
+                {% elif profile.gender == 'F' %}👩 Mujer
+                {% else %}🌈 Otro{% endif %}
+              </span>
+              {% endif %}
+              {% if profile.location %}
+              <span class="badge bg-light text-dark border px-3 py-2">
+                <i class="bi bi-geo-alt text-danger"></i> {{ profile.location }}
+              </span>
+              {% endif %}
+            </div>
+
+            {% if profile_user == request.user %}
+            <div class="mt-4 d-flex gap-2">
+              <a href="{% url 'profile_edit' %}" class="btn btn-spark rounded-pill px-4">
+                <i class="bi bi-pencil-fill me-2"></i>Editar perfil
+              </a>
+              <a href="{% url 'discover' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-search-heart me-2"></i>Descubrir
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

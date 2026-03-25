@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}SparkMatch - Encuentra tu conexión 💖{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="bg-spark text-white py-5" style="min-height:100vh;display:flex;align-items:center;">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 text-center text-lg-start">
+        <div class="mb-3">
+          <span class="badge bg-white text-danger fs-6 px-3 py-2 rounded-pill fw-bold">
+            <i class="bi bi-fire me-1"></i> ¡La app de citas más caliente!
+          </span>
+        </div>
+        <h1 class="display-3 fw-black mb-4" style="line-height:1.1;">
+          Encuentra tu<br><span style="color:#ffeb3b;">chispa</span> perfecta 💖
+        </h1>
+        <p class="lead mb-4 opacity-75">
+          Desliza, conecta y chatea con personas increíbles cerca de ti.
+          SparkMatch usa algoritmos inteligentes para encontrar tu match ideal.
+        </p>
+        <div class="d-flex gap-3 flex-wrap justify-content-center justify-content-lg-start">
+          <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold text-danger shadow">
+            <i class="bi bi-rocket-takeoff me-2"></i> Empezar gratis
+          </a>
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold">
+            <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar sesión
+          </a>
+        </div>
+        <div class="mt-4 d-flex gap-4 flex-wrap justify-content-center justify-content-lg-start">
+          <div class="text-center">
+            <div class="fw-bold fs-3">10K+</div>
+            <small class="opacity-75">Usuarios activos</small>
+          </div>
+          <div class="text-center">
+            <div class="fw-bold fs-3">5K+</div>
+            <small class="opacity-75">Matches exitosos</small>
+          </div>
+          <div class="text-center">
+            <div class="fw-bold fs-3">99%</div>
+            <small class="opacity-75">Satisfacción</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="position-relative" style="height:480px;">
+          <!-- Card stack effect -->
+          <div class="card shadow-lg position-absolute text-center p-0 overflow-hidden"
+               style="width:280px;height:380px;top:60px;left:50%;transform:translateX(-50%) rotate(6deg);z-index:1;">
+            <img src="https://ui-avatars.com/api/?name=Sofia+M&size=280&background=ff6090&color=fff&bold=true"
+                 class="card-img-top" style="height:240px;object-fit:cover;" alt="">
+            <div class="card-body text-start p-3">
+              <h5 class="mb-0 fw-bold">Sofía M. <span class="badge bg-success ms-1" style="font-size:0.65rem;">Online</span></h5>
+              <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> Quito · 24 años</small>
+              <p class="small mt-1 mb-0 text-muted">Amante de los viajes ✈️ y el café ☕</p>
+            </div>
+          </div>
+          <div class="card shadow-lg position-absolute text-center p-0 overflow-hidden"
+               style="width:280px;height:380px;top:40px;left:50%;transform:translateX(-60%) rotate(-4deg);z-index:2;">
+            <img src="https://ui-avatars.com/api/?name=Carlos+R&size=280&background=7c4dff&color=fff&bold=true"
+                 class="card-img-top" style="height:240px;object-fit:cover;" alt="">
+            <div class="card-body text-start p-3">
+              <h5 class="mb-0 fw-bold">Carlos R.</h5>
+              <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> Guayaquil · 27 años</small>
+              <p class="small mt-1 mb-0 text-muted">Músico y foodie 🎸🍕</p>
+            </div>
+          </div>
+          <div class="card shadow-lg position-absolute text-center p-0 overflow-hidden"
+               style="width:280px;height:380px;top:20px;left:50%;transform:translateX(-40%) rotate(2deg);z-index:3;">
+            <img src="https://ui-avatars.com/api/?name=Ana+L&size=280&background=e91e63&color=fff&bold=true"
+                 class="card-img-top" style="height:240px;object-fit:cover;" alt="">
+            <div class="card-body text-start p-3">
+              <h5 class="mb-0 fw-bold">Ana L. <i class="bi bi-patch-check-fill text-primary ms-1" style="font-size:0.9rem;"></i></h5>
+              <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> Cuenca · 22 años</small>
+              <p class="small mt-1 mb-0 text-muted">Doctora en entrenamiento 👩‍⚕️</p>
+            </div>
+          </div>
+          <!-- Like / Nope badges -->
+          <div class="position-absolute badge bg-success fs-5 px-3 py-2 rounded-pill shadow"
+               style="top:10px;right:10px;z-index:10;transform:rotate(15deg);">
+            <i class="bi bi-heart-fill"></i> LIKE
+          </div>
+          <div class="position-absolute badge bg-danger fs-5 px-3 py-2 rounded-pill shadow"
+               style="top:10px;left:10px;z-index:10;transform:rotate(-15deg);">
+            <i class="bi bi-x-lg"></i> NOPE
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold display-6">¿Cómo funciona? 🤔</h2>
+      <p class="text-muted fs-5">Tres simples pasos para encontrar tu match</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="card h-100 text-center p-4 border-0 shadow-sm">
+          <div class="mb-3">
+            <span class="display-4">👤</span>
+          </div>
+          <h4 class="fw-bold">1. Crea tu perfil</h4>
+          <p class="text-muted">Sube fotos, escribe tu bio y cuéntanos qué te hace único/a.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 text-center p-4 border-0 shadow-sm" style="border-top:4px solid #e91e63 !important;">
+          <div class="mb-3">
+            <span class="display-4">🔥</span>
+          </div>
+          <h4 class="fw-bold">2. Descubre y desliza</h4>
+          <p class="text-muted">Explora perfiles. ❤️ si te gusta, ✖️ si no. ¡Así de fácil!</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 text-center p-4 border-0 shadow-sm">
+          <div class="mb-3">
+            <span class="display-4">💬</span>
+          </div>
+          <h4 class="fw-bold">3. ¡Haz match y chatea!</h4>
+          <p class="text-muted">Cuando hay match mutuo, ¡empieza la conversación!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="bg-dark text-white text-center py-5">
+  <div class="container py-3">
+    <h2 class="display-5 fw-bold mb-3">¿Listo para encontrar tu spark? <i class="bi bi-fire text-warning"></i></h2>
+    <p class="lead mb-4 opacity-75">Únete a miles de personas que ya encontraron su conexión especial.</p>
+    <a href="{% url 'register' %}" class="btn btn-spark btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5">
+      <i class="bi bi-heart-fill me-2"></i> Unirme gratis ahora
+    </a>
+  </div>
+</section>
+
+<footer class="py-4 text-center">
+  <div class="container">
+    <span class="fw-bold text-spark"><i class="bi bi-fire"></i> SparkMatch</span>
+    <span class="ms-3 text-muted small">© 2026 · Desarrollado con ❤️ por Isaac Esteban Haro Torres</span>
+  </div>
+</footer>
+{% endblock %}

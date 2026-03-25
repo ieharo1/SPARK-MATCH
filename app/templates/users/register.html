@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Registro - SparkMatch 💖{% endblock %}
+
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center py-4" style="background: linear-gradient(135deg,#fce4ec 0%,#fff3e0 100%);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <div class="text-center mb-4">
+          <a href="/" class="text-decoration-none">
+            <h1 class="display-4 fw-black text-spark"><i class="bi bi-fire"></i> SparkMatch</h1>
+          </a>
+          <p class="text-muted fs-5">Crea tu cuenta gratis 🚀</p>
+        </div>
+        <div class="card shadow-lg p-4 p-md-5">
+          {% crispy form %}
+          <hr>
+          <p class="text-center mb-0 text-muted">
+            ¿Ya tienes cuenta?
+            <a href="{% url 'login' %}" class="text-spark fw-bold text-decoration-none">Inicia sesión</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

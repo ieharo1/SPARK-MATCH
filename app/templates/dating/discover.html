@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% block title %}Descubrir - SparkMatch 🔥{% endblock %}
+
+{% block extra_head %}
+<style>
+  #swipe-area { touch-action: pan-y; user-select: none; }
+  .profile-card {
+    width: 100%;
+    max-width: 380px;
+    height: 520px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    cursor: grab;
+    transition: transform 0.1s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    position: relative;
+    background: #222;
+  }
+  .profile-card:active { cursor: grabbing; }
+  .profile-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent 30%, rgba(0,0,0,0.85) 100%);
+    color: white; padding: 1.5rem 1.5rem 1.2rem;
+  }
+  .like-badge, .nope-badge {
+    position: absolute; top: 30px; padding: 0.4rem 1.2rem;
+    font-size: 1.5rem; font-weight: 900; border-radius: 0.5rem;
+    letter-spacing: 2px; opacity: 0;
+    transition: opacity 0.15s ease; pointer-events: none;
+    z-index: 10;
+  }
+  .like-badge { left: 20px; color: #4caf50; border: 4px solid #4caf50; transform: rotate(-15deg); }
+  .nope-badge { right: 20px; color: #f44336; border: 4px solid #f44336; transform: rotate(15deg); }
+  .action-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%; font-size: 1.6rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    border: none;
+  }
+  .action-btn:hover { transform: scale(1.12); }
+  .btn-pass { background: white; color: #f44336; box-shadow: 0 4px 20px rgba(244,67,54,0.25); }
+  .btn-like { background: var(--spark-gradient); color: white; box-shadow: 0 4px 20px rgba(233,30,99,0.35); }
+  .btn-super { background: white; color: #2196f3; box-shadow: 0 4px 20px rgba(33,150,243,0.25); width:52px; height:52px; font-size:1.2rem; }
+
+  /* Match modal */
+  #matchModal .modal-content {
+    background: var(--spark-gradient);
+    color: white; border-radius: 2rem; border: none;
+    text-align: center;
+  }
+  .match-photos { display: flex; justify-content: center; align-items: center; gap: -20px; }
+  .match-photo {
+    width: 110px; height: 110px;
+    border-radius: 50%; border: 4px solid white;
+    object-fit: cover; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 576px) {
+    .profile-card { height: 60vh; max-width: 100%; }
+    .action-btn { width: 56px; height: 56px; font-size: 1.4rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+
+      {% if not profile.is_complete %}
+      <div class="alert alert-warning alert-dismissible fade show rounded-spark border-0 shadow-sm mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>¡Completa tu perfil!</strong> Añade bio, ciudad y fecha de nacimiento para aparecer en búsquedas.
+        <a href="{% url 'profile_edit' %}" class="alert-link ms-1">Completar ahora →</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      {% if current_profile %}
+      <!-- Swipe deck -->
+      <div id="swipe-area" class="d-flex justify-content-center mb-3 position-relative">
+        <!-- Background stack cards for effect -->
+        <div class="position-absolute profile-card"
+             style="transform: rotate(4deg) scale(0.96); top: 10px; z-index: 1; opacity: 0.6; pointer-events: none; background: #ddd;">
+        </div>
+        <div class="position-absolute profile-card"
+             style="transform: rotate(-2deg) scale(0.98); top: 5px; z-index: 2; opacity: 0.8; pointer-events: none; background: #eee;">
+        </div>
+
+        <!-- Active card -->
+        <div id="activeCard" class="profile-card" style="z-index:5;"
+             data-user-id="{{ current_profile.user.id }}">
+          <div class="like-badge" id="likeBadge">LIKE ❤️</div>
+          <div class="nope-badge" id="nopeBadge">NOPE ✖️</div>
+          <img src="{{ current_profile.get_photo_url }}"
+               alt="{{ current_profile.user.get_full_name }}"
+               draggable="false"
+               onerror="this.src='https://ui-avatars.com/api/?name={{ current_profile.user.first_name }}+{{ current_profile.user.last_name }}&size=400&background=e91e63&color=fff&bold=true'">
+          <div class="card-overlay">
+            <h3 class="fw-bold mb-1">
+              {{ current_profile.user.get_full_name|default:current_profile.user.username }}
+              {% if current_profile.get_age %}, {{ current_profile.get_age }}{% endif %}
+            </h3>
+            {% if current_profile.location %}
+            <p class="mb-1 small opacity-75">
+              <i class="bi bi-geo-alt-fill text-danger"></i> {{ current_profile.location }}
+            </p>
+            {% endif %}
+            {% if current_profile.bio %}
+            <p class="mb-0 small opacity-90 text-truncate" style="max-width:300px;">{{ current_profile.bio }}</p>
+            {% endif %}
+            <div class="mt-2">
+              <a href="{% url 'profile_view' current_profile.user.id %}"
+                 class="badge bg-white bg-opacity-25 text-white text-decoration-none border border-white border-opacity-25 py-1 px-3 rounded-pill">
+                <i class="bi bi-eye me-1"></i> Ver perfil completo
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="d-flex justify-content-center align-items-center gap-4 mb-3">
+        <button class="action-btn btn-pass shadow" id="btnPass" title="No me interesa">
+          <i class="bi bi-x-lg"></i>
+        </button>
+        <button class="action-btn btn-super shadow" id="btnSuper" title="Super Like">
+          <i class="bi bi-star-fill"></i>
+        </button>
+        <button class="action-btn btn-like shadow" id="btnLike" title="Me gusta">
+          <i class="bi bi-heart-fill"></i>
+        </button>
+      </div>
+
+      <!-- Remaining info -->
+      <p class="text-center text-muted small">
+        <i class="bi bi-people me-1"></i>
+        {% if remaining > 0 %}
+          {{ remaining }} perfil{{ remaining|pluralize:"es" }} más por ver
+        {% else %}
+          Este es el último perfil disponible por ahora
+        {% endif %}
+      </p>
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="text-center py-5">
+        <div class="display-1 mb-3">😴</div>
+        <h3 class="fw-bold">No hay más perfiles</h3>
+        <p class="text-muted fs-5">Has visto todos los perfiles disponibles.<br>¡Vuelve más tarde o amplía tus preferencias!</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+          <a href="{% url 'profile_edit' %}" class="btn btn-spark rounded-pill px-4">
+            <i class="bi bi-sliders me-2"></i> Cambiar preferencias
+          </a>
+          <a href="{% url 'matches_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-heart-fill me-2"></i> Ver mis matches
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- MATCH MODAL -->
+<div class="modal fade" id="matchModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content p-4">
+      <div class="text-center mb-3">
+        <div class="display-3 mb-2">🎉</div>
+        <h2 class="fw-black display-6 mb-1">¡Es un Match!</h2>
+        <p class="opacity-75 mb-3">¡A <span id="matchName"></span> y a ti os gustáis mutuamente!</p>
+      </div>
+      <div class="match-photos mb-4 position-relative" style="height:130px;">
+        <img src="{{ profile.get_photo_url }}" alt="Tú"
+             class="match-photo position-absolute" style="left:30px; top:0; z-index:2;">
+        <img id="matchPhoto" src="" alt="Match"
+             class="match-photo position-absolute" style="right:30px; top:0; z-index:1;">
+        <div class="position-absolute" style="left:50%;top:50%;transform:translate(-50%,-50%);font-size:2rem;z-index:3;">💖</div>
+      </div>
+      <div class="d-grid gap-2">
+        <a id="btnGoChat" href="#" class="btn btn-light btn-lg rounded-pill fw-bold text-spark">
+          <i class="bi bi-chat-heart-fill me-2"></i> Enviar mensaje
+        </a>
+        <button class="btn btn-outline-light btn-lg rounded-pill" data-bs-dismiss="modal" onclick="loadNext()">
+          Seguir explorando
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% if current_profile %}
+<script>
+const SWIPE_URL = "{% url 'swipe' %}";
+const CSRF = "{{ csrf_token }}";
+const userId = {{ current_profile.user.id }};
+
+const card = document.getElementById('activeCard');
+const likeBadge = document.getElementById('likeBadge');
+const nopeBadge = document.getElementById('nopeBadge');
+const matchModal = new bootstrap.Modal(document.getElementById('matchModal'));
+
+// ---- Drag/Touch swipe ----
+let startX = 0, startY = 0, currentX = 0, isDragging = false;
+
+function onStart(x, y) {
+  startX = x; startY = y; isDragging = true;
+  card.style.transition = 'none';
+}
+function onMove(x, y) {
+  if (!isDragging) return;
+  currentX = x - startX;
+  const rotate = currentX / 15;
+  card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+  const ratio = Math.min(Math.abs(currentX) / 100, 1);
+  if (currentX > 0) {
+    likeBadge.style.opacity = ratio;
+    nopeBadge.style.opacity = 0;
+  } else {
+    nopeBadge.style.opacity = ratio;
+    likeBadge.style.opacity = 0;
+  }
+}
+function onEnd() {
+  if (!isDragging) return;
+  isDragging = false;
+  card.style.transition = 'transform 0.3s ease';
+  if (currentX > 100) triggerSwipe('like');
+  else if (currentX < -100) triggerSwipe('pass');
+  else {
+    card.style.transform = '';
+    likeBadge.style.opacity = 0;
+    nopeBadge.style.opacity = 0;
+  }
+  currentX = 0;
+}
+
+card.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+document.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
+document.addEventListener('mouseup', onEnd);
+
+card.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+card.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+card.addEventListener('touchend', onEnd);
+
+// ---- Buttons ----
+document.getElementById('btnLike').onclick = () => triggerSwipe('like');
+document.getElementById('btnPass').onclick = () => triggerSwipe('pass');
+document.getElementById('btnSuper').onclick = () => triggerSwipe('like');
+
+function triggerSwipe(action) {
+  const dir = action === 'like' ? 1 : -1;
+  card.style.transition = 'transform 0.45s ease, opacity 0.45s ease';
+  card.style.transform = `translateX(${dir * window.innerWidth}px) rotate(${dir * 25}deg)`;
+  card.style.opacity = '0';
+
+  fetch(SWIPE_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF},
+    body: `to_user_id=${userId}&action=${action}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.is_match) {
+      document.getElementById('matchName').textContent = data.match_name;
+      document.getElementById('matchPhoto').src = data.match_photo;
+      document.getElementById('btnGoChat').href = `/dating/chat/${data.match_id}/`;
+      matchModal.show();
+    } else {
+      setTimeout(loadNext, 400);
+    }
+  })
+  .catch(() => setTimeout(loadNext, 400));
+}
+
+function loadNext() {
+  window.location.reload();
+}
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: sparkmatch
+      POSTGRES_USER: spark
+      POSTGRES_PASSWORD: spark2026
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spark -d sparkmatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: always
+    volumes:
+      - ./app:/app
+      - media_data:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SECRET_KEY=sparkmatch-super-secret-key-2026-change-in-production
+      - DEBUG=True
+      - POSTGRES_DB=sparkmatch
+      - POSTGRES_USER=spark
+      - POSTGRES_PASSWORD=spark2026
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+volumes:
+  postgres_data:
+  media_data:

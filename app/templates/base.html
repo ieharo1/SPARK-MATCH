@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SparkMatch 💖{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --spark-pink: #e91e63;
+      --spark-dark-pink: #c2185b;
+      --spark-orange: #ff5722;
+      --spark-gradient: linear-gradient(135deg, #e91e63 0%, #ff5722 100%);
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #f8f9fa; }
+    .navbar-brand { font-weight: 800; font-size: 1.5rem; }
+    .btn-spark { background: var(--spark-gradient); border: none; color: white; font-weight: 600; }
+    .btn-spark:hover { background: linear-gradient(135deg, #c2185b 0%, #e64a19 100%); color: white; }
+    .text-spark { color: var(--spark-pink) !important; }
+    .bg-spark { background: var(--spark-gradient) !important; }
+    .border-spark { border-color: var(--spark-pink) !important; }
+    .navbar { box-shadow: 0 2px 15px rgba(233,30,99,0.15); }
+    .nav-link.active { color: var(--spark-pink) !important; font-weight: 600; }
+    .badge-spark { background: var(--spark-gradient); }
+    .card { border-radius: 1.2rem; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .rounded-spark { border-radius: 1.5rem; }
+    footer { background: #212529; color: #adb5bd; }
+    @media (max-width: 576px) { .hide-mobile { display: none !important; } }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+  <div class="container">
+    <a class="navbar-brand text-spark" href="{% url 'discover' %}">
+      <i class="bi bi-fire"></i> SparkMatch
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link px-3 py-2 rounded-pill {% if request.resolver_match.url_name == 'discover' %}active bg-light{% endif %}"
+             href="{% url 'discover' %}">
+            <i class="bi bi-search-heart-fill me-1"></i><span class="hide-mobile">Descubrir</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 py-2 rounded-pill position-relative {% if 'match' in request.resolver_match.url_name %}active bg-light{% endif %}"
+             href="{% url 'matches_list' %}">
+            <i class="bi bi-heart-fill me-1"></i><span class="hide-mobile">Matches</span>
+            {% if unread_messages_total > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-spark" style="font-size:0.65rem;">
+              {{ unread_messages_total }}
+            </span>
+            {% endif %}
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav gap-1 align-items-center">
+        <li class="nav-item">
+          <a class="nav-link px-3 py-2 rounded-pill {% if request.resolver_match.url_name == 'my_profile' %}active bg-light{% endif %}"
+             href="{% url 'my_profile' %}">
+            {% with profile=request.user.profile %}
+            <img src="{{ profile.get_photo_url }}" alt="foto" width="28" height="28"
+                 class="rounded-circle object-fit-cover border border-2 border-danger me-1"
+                 style="object-fit:cover;">
+            {% endwith %}
+            <span class="hide-mobile">{{ request.user.first_name|default:request.user.username }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 py-2 rounded-pill" href="{% url 'profile_edit' %}" title="Editar perfil">
+            <i class="bi bi-gear-fill"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-danger px-3 py-2 rounded-pill" href="{% url 'logout' %}">
+            <i class="bi bi-box-arrow-right"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+{% if messages %}
+<div class="container mt-2">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-spark py-2" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

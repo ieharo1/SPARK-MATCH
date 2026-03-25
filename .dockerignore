@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+*.egg-info/
+dist/
+build/
+*.sqlite3
+.git/
+.gitignore
+media/
+staticfiles/
