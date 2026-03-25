@@ -1,9 +1,5 @@
 # 🔥 SparkMatch
 
-<p align="center">
-  <img src="https://img.icons8.com/color/200/000000/tinder--v1.png" alt="SparkMatch Logo" width="200"/>
-</p>
-
 ---
 
 ## 📱 Descripción
